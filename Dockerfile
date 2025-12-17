@@ -1,5 +1,5 @@
-# Stage 1: Build the application
-FROM gradle:8.4-jdk17 AS builder
+# Stage 1: Build the application using Gradle 9+ with Java 21
+FROM gradle:9.5-jdk21 AS builder
 WORKDIR /app
 
 # Copy project files
@@ -8,8 +8,8 @@ COPY . .
 # Build the Spring Boot jar
 RUN gradle clean build --no-daemon
 
-# Stage 2: Run the application
-FROM eclipse-temurin:17-jdk-jammy
+# Stage 2: Run the application using Java 21
+FROM eclipse-temurin:21-jdk-jammy
 WORKDIR /app
 
 # Copy the jar from the builder stage
