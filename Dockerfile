@@ -1,5 +1,5 @@
-# Stage 1: Build the application using Gradle 9+ with Java 21
-FROM gradle:9.5-jdk21 AS builder
+# Stage 1: Build the application using Gradle with Java 21
+FROM gradle:jdk21 AS builder
 WORKDIR /app
 
 # Copy project files
