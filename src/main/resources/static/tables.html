@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>League Tables</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { margin-top: 40px; }
+        table { border-collapse: collapse; width: 50%; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background-color: #f0f0f0; }
+    </style>
+</head>
+<body>
+<h1>League Standings</h1>
+<div th:each="entry : ${standings}">
+    <h2 th:text="${entry.key.name}"></h2>
+    <table>
+        <tr>
+            <th>Player</th>
+            <th>Points</th>
+        </tr>
+        <tr th:each="player : ${entry.value}">
+            <td th:text="${player.name}"></td>
+            <td th:text="${@leagueService.getPoints(player)}"></td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

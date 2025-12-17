@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Match</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; text-align: center; }
+        input { width: 60px; font-size: 18px; text-align: center; }
+        button { padding: 10px 20px; margin-top: 20px; font-size: 18px; }
+        h1, h2 { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+<div th:if="${match != null}">
+    <h1>Live Match</h1>
+    <h2 th:text="${match.player1.name} + ' vs ' + ${match.player2.name}"></h2>
+    <form th:action="@{/live}" method="post">
+        <input type="hidden" name="player1" th:value="${match.player1.name}"/>
+        <input type="hidden" name="player2" th:value="${match.player2.name}"/>
+        <label th:text="${match.player1.name}"></label>
+        <input type="number" name="score1" min="0" required/>
+        vs
+        <input type="number" name="score2" min="0" required/>
+        <label th:text="${match.player2.name}"></label><br/>
+        <button type="submit">Submit Score</button>
+    </form>
+</div>
+<div th:if="${match == null}">
+    <h1 th:text="${message}"></h1>
+</div>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>League Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: #f0f2f5;
+            color: #333;
+        }
+        header {
+            background: #0b84ff;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            min-width: 300px;
+            flex: 1 1 300px;
+        }
+        h2 { text-align: center; color: #0b84ff; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background: #0b84ff; color: white; }
+        button {
+            background: #0b84ff; color: white;
+            border: none; padding: 6px 10px; border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover { background: #0866cc; }
+        input, select {
+            padding: 6px; width: 100%; margin-bottom: 10px;
+            border-radius: 5px; border: 1px solid #ccc;
+        }
+        .admin-section {
+            background: #eef3ff;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        @media(max-width: 600px) { .container { flex-direction: column; } }
+    </style>
+</head>
+<body>
+
+<header>League Dashboard</header>
+
+<div class="card admin-section">
+    <h2>Admin Panel</h2>
+    <input type="text" id="playerNames" placeholder="Enter names comma-separated (e.g. Alice,Bob,Charlie,David)">
+    <button onclick="setPlayers()">Set Players & Generate Fixtures</button>
+</div>
+<a href="/fixtures.html">View Fixtures</a>
+
+<div class="container">
+    <div class="card">
+        <h2>Group A</h2>
+        <div id="fixturesA"></div>
+        <h3>League Table</h3>
+        <div id="tableA"></div>
+    </div>
+    <div class="card">
+        <h2>Group B</h2>
+        <div id="fixturesB"></div>
+        <h3>League Table</h3>
+        <div id="tableB"></div>
+    </div>
+</div>
+
+<script>
+    const api = "/api";
+
+    async function setPlayers() {
+        const names = document.getElementById("playerNames").value.split(",").map(n => n.trim()).filter(n=>n);
+        if(!names.length) { alert("Enter at least 2 players"); return; }
+
+        const password = prompt("Enter admin password:");
+        if(!password) return;
+
+        const res = await fetch(`${api}/players`, {
+            method:"POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({names, password})
+        });
+
+        const text = await res.text();
+        alert(text);
+        loadFixturesAndTables();
+    }
+
+    async function loadFixturesAndTables() {
+        await loadGroup("A");
+        await loadGroup("B");
+    }
+
+    async function loadGroup(group) {
+        const fixturesDiv = document.getElementById("fixtures" + group);
+        const tableDiv = document.getElementById("table" + group);
+
+        const fixtures = await (await fetch(`${api}/fixtures/${group}`)).json();
+        fixturesDiv.innerHTML = generateFixturesHTML(fixtures, group);
+
+        const table = await (await fetch(`${api}/table/${group}`)).json();
+        tableDiv.innerHTML = generateTableHTML(table);
+    }
+
+    function generateFixturesHTML(fixtures, group) {
+        let html = '<table><tr><th>Player 1</th><th>Player 2</th><th>Score</th><th>Action</th></tr>';
+        fixtures.forEach((match, index)=>{
+            const score = match.player1Score!=null?`${match.player1Score}-${match.player2Score}`:'';
+            html += `<tr>
+      <td>${match.player1.name}</td>
+      <td>${match.player2.name}</td>
+      <td>${score}</td>
+      <td>
+        <select id="winner-${group}-${index}">
+          <option value="">Select winner</option>
+          <option value="player1">${match.player1.name}</option>
+          <option value="player2">${match.player2.name}</option>
+          <option value="draw">Draw</option>
+        </select>
+        <button onclick="recordWinner('${group}',${index})">Submit</button>
+      </td>
+    </tr>`;
+        });
+        html += '</table>';
+        return html;
+    }
+
+    function generateTableHTML(players){
+        let html = '<table><tr><th>Player</th><th>Points</th></tr>';
+        players.forEach(p => { html += `<tr><td>${p.name}</td><td>${p.points}</td></tr>` });
+        html += '</table>';
+        return html;
+    }
+
+    function recordWinner(group, index){
+        const winnerSelect = document.getElementById(`winner-${group}-${index}`);
+        const winner = winnerSelect.value;
+        if(!winner) { alert("Select a winner"); return; }
+
+        const password = prompt("Enter admin password:");
+        if(!password) return;
+
+        fetch(`${api}/fixtures/${group}/${index}/winner`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({winner, password})
+        }).then(()=>loadGroup(group));
+    }
+
+    // Auto-refresh every 5 seconds for viewers
+    setInterval(loadFixturesAndTables, 5000);
+    loadFixturesAndTables();
+</script>
+
+</body>
+</html>

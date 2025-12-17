@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Input Players</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        textarea { width: 400px; height: 150px; }
+        button { padding: 10px 20px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+<h1>Enter Player Names</h1>
+<p>Separate names with commas (e.g., Alice,Bob,Charlie,David)</p>
+<form th:action="@{/admin/input}" method="post">
+    <textarea name="names" placeholder="Enter player names here"></textarea><br/>
+    <button type="submit">Create League</button>
+</form>
+</body>
+</html>

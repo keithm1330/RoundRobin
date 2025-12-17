@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pool League Fixtures & Tables</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: #1b3a1b; /* dark green background */
+            color: #f3f4f6;
+        }
+        header {
+            background: linear-gradient(90deg, #228B22, #32CD32); /* green gradient */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .section {
+            background: #2e7d32; /* slightly darker green card */
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 25px;
+        }
+        .match-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 12px;
+            border-bottom: 1px solid #1b3a1b;
+            transition: background 0.2s, transform 0.2s;
+            background: #388e3c;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .match-card:last-child { margin-bottom: 0; }
+        .match-card:hover {
+            background: #43a047;
+            transform: translateY(-1px);
+        }
+        .match-card span {
+            font-weight: 500;
+            font-size: 1.1em;
+            color: #f3f4f6;
+        }
+        h2, h3 {
+            text-align: center;
+            color: #dcedc8; /* light green text */
+            margin-bottom: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #388e3c;
+        }
+        th, td {
+            border: 1px solid #1b3a1b;
+            padding: 10px;
+            text-align: center;
+            font-weight: 500;
+            color: #f3f4f6;
+        }
+        th {
+            background: #4caf50;
+            font-weight: 600;
+        }
+        tr:nth-child(even) { background: #2e7d32; }
+        tr:hover { background: #43a047; }
+        .group-label {
+            font-size: 0.85em;
+            color: #c8e6c9;
+        }
+        @media(max-width: 640px) {
+            .container { padding: 12px; }
+            .match-card { flex-direction: column; gap: 6px; align-items: flex-start; }
+            .match-card span { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+
+<header>Pool League Fixtures & Tables</header>
+
+<div class="container">
+    <div class="section" id="fixturesSection">
+        <h2>All Fixtures</h2>
+        <div id="fixturesContainer"></div>
+    </div>
+
+    <div class="section" id="tablesSection">
+        <h2>League Tables</h2>
+        <h3>Group A</h3>
+        <div id="tableA"></div>
+        <h3>Group B</h3>
+        <div id="tableB"></div>
+    </div>
+</div>
+
+<script>
+    const api = "/api";
+
+    async function loadPage() {
+        const [matchesA, matchesB, tableA, tableB] = await Promise.all([
+            fetch(`${api}/fixtures/A`).then(r => r.json()),
+            fetch(`${api}/fixtures/B`).then(r => r.json()),
+            fetch(`${api}/table/A`).then(r => r.json()),
+            fetch(`${api}/table/B`).then(r => r.json())
+        ]);
+
+        const fixturesContainer = document.getElementById("fixturesContainer");
+        fixturesContainer.innerHTML = "";
+        const maxLen = Math.max(matchesA.length, matchesB.length);
+        for(let i=0; i<maxLen; i++){
+            if(i < matchesA.length) fixturesContainer.appendChild(createMatchCard(matchesA[i], "A"));
+            if(i < matchesB.length) fixturesContainer.appendChild(createMatchCard(matchesB[i], "B"));
+        }
+
+        document.getElementById("tableA").innerHTML = generateTableHTML(tableA);
+        document.getElementById("tableB").innerHTML = generateTableHTML(tableB);
+    }
+
+    function createMatchCard(match, group){
+        const div = document.createElement("div");
+        div.className = "match-card";
+
+        const players = document.createElement("span");
+        players.textContent = `${match.player1.name} vs ${match.player2.name}`;
+
+        const score = document.createElement("span");
+        score.textContent = match.player1Score != null ? `${match.player1Score}-${match.player2Score}` : "Pending";
+
+        const label = document.createElement("span");
+        label.textContent = "Group " + group;
+        label.className = "group-label";
+
+        div.appendChild(players);
+        div.appendChild(score);
+        div.appendChild(label);
+        return div;
+    }
+
+    function generateTableHTML(players){
+        let html = '<table><tr><th>Player</th><th>Points</th></tr>';
+        players.forEach(p => { html += `<tr><td>${p.name}</td><td>${p.points}</td></tr>` });
+        html += '</table>';
+        return html;
+    }
+
+    setInterval(loadPage, 5000);
+    loadPage();
+</script>
+
+</body>
+</html>
