@@ -8,17 +8,17 @@
         body {
             font-family: 'Segoe UI', sans-serif;
             margin: 0;
-            background: #1b3a1b; /* dark green background */
-            color: #f3f4f6;
+            background: #f9fafb; /* light background */
+            color: #1f2937;
         }
         header {
-            background: linear-gradient(90deg, #228B22, #32CD32); /* green gradient */
+            background: linear-gradient(90deg, #4f46e5, #6366f1); /* subtle modern gradient */
             color: white;
             padding: 20px;
             text-align: center;
             font-size: 1.8em;
             font-weight: 600;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .container {
             display: flex;
@@ -29,9 +29,9 @@
             margin: 0 auto;
         }
         .section {
-            background: #2e7d32; /* slightly darker green card */
+            background: white;
             border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             padding: 25px;
         }
         .match-card {
@@ -39,25 +39,25 @@
             justify-content: space-between;
             align-items: center;
             padding: 14px 12px;
-            border-bottom: 1px solid #1b3a1b;
+            border-bottom: 1px solid #e5e7eb;
             transition: background 0.2s, transform 0.2s;
-            background: #388e3c;
+            background: #f3f4f6;
             border-radius: 8px;
             margin-bottom: 8px;
         }
         .match-card:last-child { margin-bottom: 0; }
         .match-card:hover {
-            background: #43a047;
+            background: #e0e7ff;
             transform: translateY(-1px);
         }
         .match-card span {
             font-weight: 500;
             font-size: 1.1em;
-            color: #f3f4f6;
+            color: #1f2937;
         }
         h2, h3 {
             text-align: center;
-            color: #dcedc8; /* light green text */
+            color: #4f46e5;
             margin-bottom: 12px;
         }
         table {
@@ -66,24 +66,25 @@
             margin-top: 12px;
             border-radius: 12px;
             overflow: hidden;
-            background: #388e3c;
+            background: #f3f4f6;
         }
         th, td {
-            border: 1px solid #1b3a1b;
+            border: 1px solid #e5e7eb;
             padding: 10px;
             text-align: center;
             font-weight: 500;
-            color: #f3f4f6;
+            color: #1f2937;
         }
         th {
-            background: #4caf50;
+            background: #6366f1;
+            color: white;
             font-weight: 600;
         }
-        tr:nth-child(even) { background: #2e7d32; }
-        tr:hover { background: #43a047; }
+        tr:nth-child(even) { background: #f9fafb; }
+        tr:hover { background: #e0e7ff; }
         .group-label {
             font-size: 0.85em;
-            color: #c8e6c9;
+            color: #6b7280;
         }
         @media(max-width: 640px) {
             .container { padding: 12px; }
